@@ -3,7 +3,7 @@ import { pool } from '../data/database.js'
 
 import giftData from '../data/gifts.js'
 
-async function reset(params) {
+async function reset() {
     const query = `CREATE TABLE IF NOT EXISTS gifts (
 
         id SERIAL PRIMARY KEY,
@@ -20,6 +20,35 @@ async function reset(params) {
     console.log("✅ gifts table ensured")
 }
 
-reset()
-    .catch((error) => console.log("Unable to reset", error))
+async function insertData() {
+    const query = `INSERT INTO gifts 
+    (name, price_point, audience, image, description, submittedBy, submittedOn) 
+    values ($1,$2,$3,$4,$5,$6,$7)`
+
+
+
+    for (const data of giftData) {
+        const values = [
+            data.name,
+            data.pricePoint,
+            data.audience,
+            data.image,
+            data.description,
+            data.submittedBy,
+            data.submittedOn
+        ]
+
+        await pool.query(query, values)
+    }
+
+    console.log("✅ Value insertion success")
+}
+
+async function main() {
+    await reset()
+    await insertData()
+}
+
+main()
+    .catch((err) => console.error("❌ reset/seed failed:", err))
     .finally(() => pool.end())
