@@ -14,16 +14,19 @@ async function reset() {
         description text NOT NULL,
         submittedBy VARCHAR(20) NOT NULL,
         submittedOn TIMESTAMP DEFAULT NOW()
-    )`
+    );`
 
     await pool.query(query)
     console.log("✅ gifts table ensured")
 }
 
 async function insertData() {
+
+    await pool.query('TRUNCATE TABLE gifts RESTART IDENTITY;')
+
     const query = `INSERT INTO gifts 
     (name, price_point, audience, image, description, submittedBy, submittedOn) 
-    values ($1,$2,$3,$4,$5,$6,$7)`
+    values ($1,$2,$3,$4,$5,$6,$7);`
 
 
 

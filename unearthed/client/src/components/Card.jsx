@@ -52,7 +52,7 @@ const ItemCard = ({ item }) => {
         </CardContent>
 
         <CardFooter className="flex flex-wrap gap-2 font-mono">
-          {item?.pricePoint && <Badge variant="default">{item.pricePoint}</Badge>}
+          {item?.price_point && <Badge variant="default">{item.price_point}</Badge>}
           {item?.audience && <Badge variant="secondary">{item.audience}</Badge>}
         </CardFooter>
       </Card>

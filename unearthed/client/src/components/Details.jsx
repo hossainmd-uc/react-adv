@@ -16,12 +16,12 @@ const Details = () => {
 
     async function getData() {
 
-        const response = await fetch('/gifts')
+        const response = await fetch(`/gifts/${itemId}`)
         const parsed = await response.json()
-        const filtered = parsed.find((item) => item.id === Number(itemId))
+        // const filtered = parsed.find((item) => item.id === Number(itemId))
 
 
-        setData(filtered)
+        setData(parsed)
     }
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const Details = () => {
                     <div className='flex gap-2'>
                         <Button size='sm' variant='secondary' className='tracking-wider max-w-24'>Description</Button>
                         {/* <Separator className='h-8 bg-foreground/20 ' orientation='vertical' /> */}
-                        <Button size='sm' variant='secondary'>{data.pricePoint}</Button>
+                        <Button size='sm' variant='secondary'>{data.price_point}</Button>
                     </div>
                     <p className='p-2'>{data.description}</p>
                 </div>
