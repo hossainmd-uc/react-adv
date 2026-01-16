@@ -25,3 +25,5 @@ authRouter.post('/register', async (req, res, next) => {
     }
 
 })
+
+export default authRouter;
