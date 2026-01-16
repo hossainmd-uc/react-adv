@@ -1,10 +1,12 @@
 import express from 'express'
-import authRouter from './routes/auth.routes';
+import { authRouter } from './routes/auth.routes';
+import { userRouter } from './routes/user.routes';
 
 const app = express();
 app.use(express.json());
 
 app.use('/auth', authRouter);
+app.use('/user', userRouter);
 
 app.use((err, req, res, next) => {
     console.error(err);
