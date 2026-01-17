@@ -1,6 +1,9 @@
 import { hashPassword } from "../auth/password";
 import { verifyPassword } from "../auth/password";
-import { signAccessToken } from "../auth/jwt";
+import { signAccessToken, verifyRefreshToken } from "../auth/jwt";
+
+import { signRefreshToken } from "../auth/jwt.js";
+import { REFRESH_COOKIE, setRefreshCookie } from "../auth/cookies.js";
 
 import { pool } from "../config/db";
 
@@ -48,12 +51,39 @@ const login = async (req, res, next) => {
         const ok = await verifyPassword(password, user.password_hash);
         if (!ok) return res.status(401).json({ error: "Invalid credentials" });
 
+        // Access token is generated after db authentication
         const accessToken = signAccessToken(user);
+        // Refresh token is generated and saved to HttpOnly cookie
+        const refreshToken = signRefreshToken(user);
+        setRefreshCookie(refreshToken);
+
         res.json({ accessToken });
     } catch (err) {
         next(err);
     }
 }
 
+async function refresh(req, res, next) {
 
-export const account = { register, login }
+    try {
+        const refreshToken = req.cookies?.[REFRESH_COOKIE];
+        if (!refreshToken)  return res.status(401).json({ error: "No refresh token found." });
+
+        const payload = verifyRefreshToken(refreshToken);
+
+        const query = `SELECT id, email, username FROM users WHERE id=$1`;
+        const result = pool.query(query, [payload.sub]);
+
+        if (!result.rows[0])  return res.status(401).json({ error: "User not found" }) 
+
+        const accessToken = signAccessToken(user)
+        return res.json({accessToken})
+
+    } catch (error) {
+        return res.status(401).json({ error: "Invalid/expired refresh token" });
+    }
+
+
+}
+
+export const account = { register, login, refresh };

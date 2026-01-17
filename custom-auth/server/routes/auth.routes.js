@@ -7,3 +7,4 @@ export const authRouter = Router();
 
 authRouter.post('/register', account.register)
 authRouter.post('/login', account.login)
+authRouter.post('/refresh', account.refresh)
