@@ -1,17 +1,18 @@
 import express from 'express'
-import { authRouter } from './routes/auth.routes';
-import { userRouter } from './routes/user.routes';
+import { authRouter } from './routes/auth.routes.js';
+import { userRouter } from './routes/user.routes.js';
 
 import cors from 'cors'
-import { corsOptions } from './config/cors';
+import { corsOptions } from './config/cors.js';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet'
 
 const app = express();
-app.use(express.json());
-app.use(cookieParser())
-app.use(helmet())
-app.use(cors(corsOptions))
+app.use(express.json());      // Parses incoming JSON request bodies and puts the result on req.body
+app.use(cookieParser());      // Parses the "Cookie" header and populates req.cookies (and req.signedCookies if you use a secret)
+app.use(helmet());            // Sets various security-related HTTP response headers (helps protect against common web attacks)
+app.use(cors(corsOptions));   // Controls Cross-Origin Resource Sharing; allows/blocks requests from other origins based on corsOptions
+
 
 
 app.use('/api/auth', authRouter);
@@ -24,3 +25,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT ?? 3000;
 app.listen(PORT, () => console.log(`✅ Server started Successfully on port ${PORT}`))
+
+

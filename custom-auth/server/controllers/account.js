@@ -1,12 +1,16 @@
-import { hashPassword } from "../auth/password";
-import { verifyPassword } from "../auth/password";
-import { signAccessToken, verifyRefreshToken } from "../auth/jwt";
+import { hashPassword } from "../auth/password.js";
+import { verifyPassword } from "../auth/password.js";
+import { signAccessToken, verifyRefreshToken } from "../auth/jwt.js";
 
 import { signRefreshToken } from "../auth/jwt.js";
 import { REFRESH_COOKIE, setRefreshCookie } from "../auth/cookies.js";
 
-import { pool } from "../config/db";
+import { pool } from "../config/db.js";
 
+/*
+Creates user by processing username and hashed password. Handles case 
+where email and username in use
+*/
 const register = async (req, res, next) => {
 
     try {
@@ -40,6 +44,10 @@ const register = async (req, res, next) => {
 
 }
 
+/*
+Allows the user to  log in and sets access and refresh token, saves 
+refresh to httpOnly cookie
+*/
 const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -63,21 +71,24 @@ const login = async (req, res, next) => {
     }
 }
 
+/*
+Continously resigns the access token after verification of refresh token
+*/
 async function refresh(req, res, next) {
 
     try {
         const refreshToken = req.cookies?.[REFRESH_COOKIE];
-        if (!refreshToken)  return res.status(401).json({ error: "No refresh token found." });
+        if (!refreshToken) return res.status(401).json({ error: "No refresh token found." });
 
         const payload = verifyRefreshToken(refreshToken);
 
         const query = `SELECT id, email, username FROM users WHERE id=$1`;
         const result = pool.query(query, [payload.sub]);
 
-        if (!result.rows[0])  return res.status(401).json({ error: "User not found" }) 
+        if (!result.rows[0]) return res.status(401).json({ error: "User not found" })
 
         const accessToken = signAccessToken(user)
-        return res.json({accessToken})
+        return res.json({ accessToken })
 
     } catch (error) {
         return res.status(401).json({ error: "Invalid/expired refresh token" });

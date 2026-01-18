@@ -1,8 +1,8 @@
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 export const REFRESH_COOKIE = "refresh_token";
 
-export function setRefreshToken(res, refreshToken) {
+export function setRefreshCookie(res, refreshToken) {
     res.cookie(REFRESH_COOKIE, refreshToken, {
         httpOnly: true,
         secure: env.COOKIE_SECURE,
